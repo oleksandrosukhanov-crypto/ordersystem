@@ -406,12 +406,12 @@ header {
       <div class="response-card">
         <div class="r-header">Система · Ресторан</div>
         Ласкаво просимо до системи замовлень Кухня та бар.<br>
-        Escreva o seu pedido em texto livre.<br>
+        Введіть замовлення текстом.<br>
         <span style="color:var(--text-mute);font-size:13px;font-weight:300;">
-          Ex: 2 caixas gin, 6 tónica, 1 bt rum reserva
+          Напр: 2 пляшки джину, 6 тоніку, 1 пляшка рому
         </span>
       </div>
-      <div class="msg-meta">Sistema · agora</div>
+      <div class="msg-meta">Система · зараз</div>
     </div>
   </div>
 
@@ -419,7 +419,7 @@ header {
     <div class="input-hint">Ресторан · введіть замовлення текстом</div>
     <div class="input-row">
       <textarea id="msg-input"
-        placeholder="Escreva o pedido…"
+        placeholder="Введіть замовлення…"
         rows="1"
         onkeydown="handleKey(event)"
         oninput="autoResize(this)"></textarea>
@@ -476,7 +476,7 @@ async function sendMessage() {
     handleOrderResponse(data);
   } catch(e) {
     removeTyping();
-    appendError('Erro de ligação. Tente novamente.');
+    appendError('Помилка зʼєднання. Спробуйте ще раз.');
   }
 }
 
@@ -484,7 +484,7 @@ async function sendMessage() {
 function handleOrderResponse(data) {
   const items = data.items || [];
   if (!items.length) {
-    appendError('Nenhum item reconhecido. Tente novamente.');
+    appendError('Жоден товар не розпізнано. Спробуйте ще раз.');
     return;
   }
 
@@ -511,8 +511,8 @@ function handleOrderResponse(data) {
     let extra = '';
     if (status === 'merged') {
       badge = '<span class="flag merged">MERGED</span>';
-      extra = '<div style="font-size:11px;color:var(--text-mute);margin-top:2px;">Já existe: ' +
-        (item.existing_quantity || 0) + ' ' + escHtml(unit) + ' · será tratado em separado</div>';
+      extra = '<div style="font-size:11px;color:var(--text-mute);margin-top:2px;">Вже є: ' +
+        (item.existing_quantity || 0) + ' ' + escHtml(unit) + ' · буде оброблено окремо</div>';
     } else if (status === 'cross') {
       badge = '<span class="flag cross">CROSS</span>';
     }
@@ -533,15 +533,15 @@ function handleOrderResponse(data) {
   chat.innerHTML +=
     '<div class="msg in" id="' + id + '">' +
       '<div class="response-card">' +
-        '<div class="r-header">Confirmar pedido?</div>' +
+        '<div class="r-header">Підтвердити замовлення?</div>' +
         lines +
         '<div class="r-footer">' + footer + '</div>' +
         '<div class="confirm-row">' +
-          '<button class="confirm-btn" onclick="wCancel(\'' + id + '\')">Cancelar</button>' +
-          '<button class="confirm-btn primary" onclick="wConfirm(\'' + id + '\')">Confirmar</button>' +
+          '<button class="confirm-btn" onclick="wCancel(\'' + id + '\')">Скасувати</button>' +
+          '<button class="confirm-btn primary" onclick="wConfirm(\'' + id + '\')">Підтвердити</button>' +
         '</div>' +
       '</div>' +
-      '<div class="msg-meta">Sistema · ' + time + '</div>' +
+      '<div class="msg-meta">Система · ' + time + '</div>' +
     '</div>';
   scrollBottom();
 }
@@ -600,12 +600,12 @@ async function wConfirm(id) {
         '<div class="msg in"><div class="response-card">' +
           '<div class="r-header">✓ Pedido confirmado</div>' +
           lines +
-          '<div class="r-footer">' + newCrossItems.length + ' item(s) gravado(s) · Sheets</div>' +
-        '</div><div class="msg-meta">Sistema · ' + timeNow() + '</div></div>';
+          '<div class="r-footer">' + newCrossItems.length + ' товар(ів) збережено</div>' +
+        '</div><div class="msg-meta">Система · ' + timeNow() + '</div></div>';
       scrollBottom();
     } catch(e) {
       removeTyping();
-      appendError('Erro ao confirmar novos items.');
+      appendError('Помилка підтвердження. Спробуйте ще раз.');
     }
   }
 
@@ -633,7 +633,7 @@ function showNextMerged() {
   chat.innerHTML +=
     '<div class="msg in" id="' + id + '">' +
       '<div class="response-card">' +
-        '<div class="r-header" style="color:var(--red)">⚠ Já existe no pedido</div>' +
+        '<div class="r-header" style="color:var(--red)">⚠ Вже є в замовленні</div>' +
         '<div class="order-line">' +
           '<span class="order-item">' + escHtml(name) + '<span class="flag merged">MERGED</span></span>' +
           '<span class="order-qty">Atual: ' + existing + ' ' + escHtml(unit) + '</span>' +
@@ -642,11 +642,11 @@ function showNextMerged() {
           'Adicionar mais <strong>' + qty + ' ' + escHtml(unit) + '</strong>?' +
         '</div>' +
         '<div class="confirm-row">' +
-          '<button class="confirm-btn" onclick="cancelMerged(\'' + id + '\')">Cancelar</button>' +
-          '<button class="confirm-btn primary" onclick="confirmMerged(\'' + id + '\',\'' + escAttr(name) + '\',' + qty + ',\'' + escAttr(unit) + '\',' + existing + ')">+ Adicionar</button>' +
+          '<button class="confirm-btn" onclick="cancelMerged(\'' + id + '\')">Скасувати</button>' +
+          '<button class="confirm-btn primary" onclick="confirmMerged(\'' + id + '\',\'' + escAttr(name) + '\',' + qty + ',\'' + escAttr(unit) + '\',' + existing + ')">+ Додати</button>' +
         '</div>' +
       '</div>' +
-      '<div class="msg-meta">Sistema · ' + time + '</div>' +
+      '<div class="msg-meta">Система · ' + time + '</div>' +
     '</div>';
   scrollBottom();
 }
@@ -718,7 +718,7 @@ function removeTyping() { if(typingEl){ typingEl.remove(); typingEl=null; } }
 function appendBubble(html, color) {
   const chat = document.getElementById('chat');
   chat.innerHTML += '<div class="msg in"><div class="bubble" style="color:' + (color||'var(--text)') + '">' + html + '</div>' +
-    '<div class="msg-meta">Sistema · ' + timeNow() + '</div></div>';
+    '<div class="msg-meta">Система · ' + timeNow() + '</div></div>';
   scrollBottom();
 }
 
@@ -747,7 +747,7 @@ function parseDemoResponse(text) {
       items.push({ name, qty, unit, flags:[] });
     }
   });
-  return { items, summary: items.length + ' item(s) · demo' };
+  return { items, summary: items.length + ' товар(ів) · демо' };
 }
 
 function appendDemoResponse(data) {
@@ -761,7 +761,7 @@ function appendDemoResponse(data) {
   chat.innerHTML +=
     '<div class="msg in"><div class="response-card"><div class="r-header">✓ Pedido registado</div>' +
     lines + '<div class="r-footer">' + escHtml(data.summary||'') + '</div></div>' +
-    '<div class="msg-meta">Sistema · ' + time + '</div></div>';
+    '<div class="msg-meta">Система · ' + time + '</div></div>';
   scrollBottom();
 }
 
